@@ -4,8 +4,10 @@ set -a # Export everything you see here
 # In some cases like sudo this doesn't work because of shell-subshell problem.
 toless ()
 {
+	local COLORIZED=1
 	args=( $@ )
-	$1 ${args[@]:1} | less
+
+	$1 ${args[@]:1} | less $( [ $COLORIZED -eq 1 ] && echo "-r")
 }
 
 # This is a python module that compiles other python modules in cpython style.
