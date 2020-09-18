@@ -1,0 +1,3 @@
+#!/bin/bash
+
+wget --no-host-directories --no-verbose --spider --recursive  --no-parent "$1" |& pcre2grep --line-buffered -o1 'URL:\s*(\S+)\s+200\s+OK' | xargs -n 1 | aria2c -i -
