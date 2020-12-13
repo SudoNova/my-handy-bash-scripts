@@ -23,5 +23,7 @@ ipresolve()
 # Installing such packages with pip and using pycompile is much more convenient.
 # However, I'm not sure about CFLAGS, LDFLAGS and other compile related flags in this case.
 alias tldr="python -m tldr" 
+alias ppid="ps -o ppid h"
+alias jq="jq -C"
 
 set +a # Stop exporting
