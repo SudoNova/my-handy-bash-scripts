@@ -12,17 +12,19 @@ query(){
 }
 
 download(){
-list=( $(cat "$here/result.csv" | pcre2grep -o 'https?://[\w\./:-]+get[\w\./:-]+') )
-mkdir "$here/output" 2> /dev/null
-j=0
-for i in ${list[@]}; do
+	list=( $(cat "$here/result.csv" | pcre2grep -o 'https?://[\w\./:-]+get[\w\./:-]+') )
+	mkdir "$here/output" 2> /dev/null
+	j=0
+	for i in ${list[@]}; do
         (( j+=1 ))
         url=$i
         ext=$(echo $i | pcre2grep -o1 'get/([\w]+)/')
-#        echo $j; echo $url; echo $ext
-        curl -vo "$here/book$j.$ext" "$url" && \
-		mv "$here/book$j.$ext" "$here/output"
-done
+        echo $j #; echo $url; echo $ext
+		result="$(curl -D - -vfo "$here/book$j.$ext" "$url")" &&\
+		filename="$(echo $result | pcre2grep -o1 "filename=\"([^\"]+)")" &&\
+		[[ $(stat -c '%s' "$here/book$j.$ext") -ne 0 ]] &&\
+		mv "$here/book$j.$ext" "$here/output/$filename" || rm -rf "$here/book$j.$ext"
+	done
 }
 
 case $1 in 
@@ -30,5 +32,7 @@ case $1 in
         ;;
         download) download
         ;;
-        *) echo -e "Available commands are:\n\t1) 'query' which should be followed by your search string\n\t2) 'download' which downloads results of the query"
+        *) echo -e "Available commands are:\
+			\n\t1) 'query' which should be followed by your search string\
+			\n\t2) 'download' which downloads results of the query"
 esac
