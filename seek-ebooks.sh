@@ -23,7 +23,8 @@ download(){
 		result="$(curl -D - -fo "$here/book$j.$ext" "$url")" &&\
 		filename="$(echo $result | pcre2grep -o1 'filename="([^"]+)"')" &&\
 		[[ $(stat -c '%s' "$here/book$j.$ext") -ne 0 ]] &&\
-		mv "$here/book$j.$ext" "$here/output/$filename" || rm -rf "$here/book$j.$ext"
+		mv "$here/book$j.$ext" "$here/output/$filename" ||\
+		{ rm -rf "$here/book$j.$ext" && echo -e "Failed\n"; }
 	done
 }
 
