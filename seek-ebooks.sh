@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-here=$(realpath $(dirname $BASH_SOURCE))
+here=$(realpath -s "$(dirname $BASH_SOURCE)")
 
 { which pcre2grep && which curl || return $?; } > /dev/null
 
