@@ -7,7 +7,9 @@ here=$(realpath -s "$(dirname $BASH_SOURCE)")
 
 query(){
 	query="$@"
-	curl -fGo "$here/result.csv" --data-urlencode "_search=$query" --url 'https://calishot-eng-3.herokuapp.com/index-eng/summary.csv' --data-urlencode "_sort=uuid" --data-urlencode "_size=max"
+	curl -fGo "$here/result.csv" --data-urlencode "_search=$query" --url 'https://calishot-eng-3.herokuapp.com/index-eng/summary.csv' --data-urlencode "_sort=uuid" --data-urlencode "_size=max" || 
+    curl -fGo "$here/result.csv" --data-urlencode "_search=$query" --url 'https://calishot-eng-2.herokuapp.com/index-eng/summary.csv' --data-urlencode "_sort=uuid" --data-urlencode "_size=max" || 
+    curl -fGo "$here/result.csv" --data-urlencode "_search=$query" --url 'https://calishot-eng-1.herokuapp.com/index-eng/summary.csv' --data-urlencode "_sort=uuid" --data-urlencode "_size=max" 
 
 }
 
