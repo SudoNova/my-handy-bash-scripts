@@ -5,12 +5,16 @@ here=$(realpath -s "$(dirname $BASH_SOURCE)")
 
 { which pcre2grep && which curl || return $?; } > /dev/null
 
+# Enter servers' addresses here
+	servers=( "https://calishot-eng-3.herokuapp.com" \
+		"https://calishot-eng-3.herokuapp.com" \
+		"https://calishot-eng-3.herokuapp.com" \
+		"http://0.0.0.0" )
 query(){
 	query="$@"
-	curl -fGo "$here/result.csv" --data-urlencode "_search=$query" --url 'https://calishot-eng-3.herokuapp.com/index-eng/summary.csv' --data-urlencode "_sort=uuid" --data-urlencode "_size=max" || 
-    curl -fGo "$here/result.csv" --data-urlencode "_search=$query" --url 'https://calishot-eng-2.herokuapp.com/index-eng/summary.csv' --data-urlencode "_sort=uuid" --data-urlencode "_size=max" || 
-    curl -fGo "$here/result.csv" --data-urlencode "_search=$query" --url 'https://calishot-eng-1.herokuapp.com/index-eng/summary.csv' --data-urlencode "_sort=uuid" --data-urlencode "_size=max" 
-
+	for server in ${servers[*]}; do
+		curl -fGo "$here/result.csv" --data-urlencode "_search=$query" --url "$server/index-eng/summary.csv" --data-urlencode "_sort=uuid" --data-urlencode "_size=max" && break 
+	done
 }
 
 download(){
@@ -22,7 +26,7 @@ download(){
         url=$i
         ext=$(echo $i | pcre2grep -o1 'get/([\w]+)/')
         echo $j #; echo $url; echo $ext
-		result="$(curl -D - -fo "$here/book$j.$ext" "$url")" &&\
+		result="$(curl --connect-timeout 10 --retry 3 -D - -fo "$here/book$j.$ext" "$url")" &&\
 		filename="$(echo $result | pcre2grep -o1 'filename="([^"]+)"')" &&\
 		[[ $(stat -c '%s' "$here/book$j.$ext") -ne 0 ]] &&\
 		mv "$here/book$j.$ext" "$here/output/$filename" ||\
